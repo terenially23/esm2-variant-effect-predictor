@@ -18,5 +18,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/scoring.py src/lambda_handler.py ./
 
+# Lambda's filesystem is read-only outside /tmp, but huggingface_hub defaults
+# its cache to a path under $HOME -- redirect it so model downloads succeed.
+ENV HF_HOME=/tmp/huggingface
+
 ENTRYPOINT ["python", "-m", "awslambdaric"]
 CMD ["lambda_handler.handler"]
